@@ -2329,6 +2329,22 @@ union bpf_attr {
  *		"**y**".
  *	Return
  *		0
+ *
+ * int bpf_probe_read_to_map(void *dst, int size, void *src)
+ *     @dst: pointer to map value
+ *     Return: 0 on success or negative error
+ *
+ * int bpf_probe_read_str_to_map(void *dst, int size, const void *unsafe_ptr)
+ *     Copy a NUL terminated string from unsafe address. In case the string
+ *     length is smaller than size, the target is not padded with further NUL
+ *     bytes. In case the string length is larger than size, just count-1
+ *     bytes are copied and the last byte is set to NUL.
+ *     @dst: pointer to map value
+ *     @size: maximum number of bytes to copy, including the trailing NUL
+ *     @unsafe_ptr: unsafe address
+ *     Return:
+ *       > 0 length of the string including the trailing NUL on success
+ *       < 0 error
  */
 #define __BPF_FUNC_MAPPER(FN)		\
 	FN(unspec),			\
@@ -2425,7 +2441,9 @@ union bpf_attr {
 	FN(msg_pop_data),		\
 	FN(rc_pointer_rel),		\
 	FN(spin_lock),			\
-	FN(spin_unlock),
+	FN(spin_unlock),        \
+	FN(probe_read_to_map),	\
+	FN(probe_read_str_to_map),
 
 /* integer value in 'imm' field of BPF_CALL instruction selects which helper
  * function eBPF program intends to call
